@@ -133,7 +133,7 @@ class RepairManifestsProcedure extends BaseProcedure {
             rewrittenManifestsCount,
             addedManifestsCount,
             result.duplicateFilesRemoved(),
-            result.duplicateFilesRemoved());
+            result.missingFilesRemoved());
     return new InternalRow[] {row};
   }
 

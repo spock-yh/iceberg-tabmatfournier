@@ -50,7 +50,7 @@ public interface ActionsProvider {
   /** Instantiates an action to repair manifests. */
   default RepairManifests repairManifests(Table table) {
     throw new UnsupportedOperationException(
-            this.getClass().getName() + " does not implement repairManifests");
+        this.getClass().getName() + " does not implement repairManifests");
   }
 
   /** Instantiates an action to rewrite data files. */

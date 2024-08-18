@@ -89,5 +89,4 @@ public interface RewriteManifests extends SnapshotUpdate<RewriteManifests> {
   RewriteManifests addManifest(ManifestFile manifest);
 
   RewriteManifests validateWith(BiFunction<Long, Long, Void> func);
-
 }

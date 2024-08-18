@@ -26,7 +26,6 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.shaded.com.google.common.collect.Maps;
 import org.apache.iceberg.HasTableOperations;
 import org.apache.iceberg.ManifestContent;
 import org.apache.iceberg.ManifestFile;
@@ -41,6 +40,7 @@ import org.apache.iceberg.exceptions.ValidationException;
 import org.apache.iceberg.io.FileIO;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 import org.apache.iceberg.relocated.com.google.common.collect.Lists;
+import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.iceberg.util.Pair;
 import org.apache.iceberg.util.PropertyUtil;
 import org.apache.spark.sql.Column;
@@ -720,7 +720,7 @@ public class RepairManifestsSparkAction
         long numFilesRemovedAllSources =
             missingDataFilesDF.dropDuplicates("data_file_path").count() + numDuplicateFiles;
 
-        System.out.println(numFilesRemovedAllSources);
+        LOG.info("Number of files removed: {}", numFilesRemovedAllSources);
 
         dedupeManifestsToRewrite.addAll(missingFilesManifestsToRemove);
 

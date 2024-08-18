@@ -44,6 +44,7 @@ import org.apache.iceberg.TableOperations;
 import org.apache.iceberg.exceptions.CommitStateUnknownException;
 import org.apache.iceberg.exceptions.ValidationException;
 import org.apache.iceberg.io.OutputFile;
+import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 import org.apache.iceberg.relocated.com.google.common.collect.Iterables;
 import org.apache.iceberg.spark.SparkContentFile;
@@ -219,6 +220,15 @@ abstract class BaseManifestUpdateSparkAction<T> extends BaseSnapshotUpdateSparkA
         .suppressFailureWhenFinished()
         .onFailure((location, exc) -> LOG.warn("Failed to delete: {}", location, exc))
         .run(location -> table.io().deleteFile(location));
+  }
+
+  protected void setSpecId(int specId) {
+    Preconditions.checkArgument(table.specs().containsKey(specId), "Invalid spec id %s", specId);
+    this.spec = table.specs().get(specId);
+  }
+
+  protected PartitionSpec spec() {
+    return spec;
   }
 
   protected static class WriteDataManifests extends WriteManifests<DataFile> {

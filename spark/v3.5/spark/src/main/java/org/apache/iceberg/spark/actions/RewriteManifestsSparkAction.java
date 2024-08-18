@@ -27,14 +27,12 @@ import org.apache.hadoop.fs.Path;
 import org.apache.iceberg.HasTableOperations;
 import org.apache.iceberg.ManifestContent;
 import org.apache.iceberg.ManifestFile;
-import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Snapshot;
 import org.apache.iceberg.Table;
 import org.apache.iceberg.TableOperations;
 import org.apache.iceberg.TableProperties;
 import org.apache.iceberg.actions.ImmutableRewriteManifests;
 import org.apache.iceberg.actions.RewriteManifests;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 import org.apache.iceberg.relocated.com.google.common.collect.Iterables;
 import org.apache.iceberg.relocated.com.google.common.collect.Lists;
@@ -78,14 +76,12 @@ public class RewriteManifestsSparkAction
   private final long targetManifestSizeBytes;
   private final boolean shouldStageManifests;
 
-  private PartitionSpec spec = null;
   private Predicate<ManifestFile> predicate = manifest -> true;
   private String outputLocation = null;
 
   RewriteManifestsSparkAction(SparkSession spark, Table table) {
     super(spark, table);
     this.table = table;
-    this.spec = table.spec();
     this.targetManifestSizeBytes =
         PropertyUtil.propertyAsLong(
             table.properties(),
@@ -115,8 +111,7 @@ public class RewriteManifestsSparkAction
 
   @Override
   public RewriteManifestsSparkAction specId(int specId) {
-    Preconditions.checkArgument(table.specs().containsKey(specId), "Invalid spec id %s", specId);
-    this.spec = table.specs().get(specId);
+    setSpecId(specId);
     return this;
   }
 
@@ -181,7 +176,7 @@ public class RewriteManifestsSparkAction
     Dataset<Row> manifestEntryDF = buildManifestEntryDF(matchingManifests);
 
     List<ManifestFile> newManifests;
-    if (spec.isUnpartitioned()) {
+    if (spec().isUnpartitioned()) {
       newManifests = writeUnpartitionedManifests(content, manifestEntryDF, targetNumManifests);
     } else {
       newManifests = writePartitionedManifests(content, manifestEntryDF, targetNumManifests);
@@ -259,10 +254,11 @@ public class RewriteManifestsSparkAction
         loadManifests(
             content,
             currentSnapshot,
-            manifest -> manifest.partitionSpecId() == spec.specId() && predicate.test(manifest));
+            manifest -> manifest.partitionSpecId() == spec().specId() && predicate.test(manifest));
 
     return manifests.stream()
-        .filter(manifest -> manifest.partitionSpecId() == spec.specId() && predicate.test(manifest))
+        .filter(
+            manifest -> manifest.partitionSpecId() == spec().specId() && predicate.test(manifest))
         .collect(Collectors.toList());
   }
 

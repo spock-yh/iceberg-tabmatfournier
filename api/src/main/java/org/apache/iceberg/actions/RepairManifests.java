@@ -22,37 +22,37 @@ import org.apache.iceberg.ManifestFile;
 
 public interface RepairManifests extends SnapshotUpdate<RepairManifests, RepairManifests.Result> {
 
-    /**
-     * Passes a location where the staged manifests should be written.
-     *
-     * <p>If not set, defaults to the table's metadata location.
-     *
-     * @param stagingLocation a staging location
-     * @return this for method chaining
-     */
-    RepairManifests stagingLocation(String stagingLocation);
+  /**
+   * Passes a location where the staged manifests should be written.
+   *
+   * <p>If not set, defaults to the table's metadata location.
+   *
+   * @param stagingLocation a staging location
+   * @return this for method chaining
+   */
+  RepairManifests stagingLocation(String stagingLocation);
 
-    /**
-     * Toggle writing manifests or only seeing potential results
-     *
-     * <p>If not set, defaults false
-     *
-     * @param value boolean
-     * @return this for method chaining
-     */
-    RepairManifests dryRun(boolean value);
+  /**
+   * Toggle writing manifests or only seeing potential results
+   *
+   * <p>If not set, defaults false
+   *
+   * @param value boolean
+   * @return this for method chaining
+   */
+  RepairManifests dryRun(boolean value);
 
-    interface Result {
-        /** Returns rewritten manifests. */
-        Iterable<ManifestFile> rewrittenManifests();
+  interface Result {
+    /** Returns rewritten manifests. */
+    Iterable<ManifestFile> rewrittenManifests();
 
-        /** Returns added manifests. */
-        Iterable<ManifestFile> addedManifests();
+    /** Returns added manifests. */
+    Iterable<ManifestFile> addedManifests();
 
-        /** Returns count of duplicate files removed */
-        Long duplicateFilesRemoved();
+    /** Returns count of duplicate files removed */
+    Long duplicateFilesRemoved();
 
-        /** Returns count of missing files removed */
-        Long missingFilesRemoved();
-    }
+    /** Returns count of missing files removed */
+    Long missingFilesRemoved();
+  }
 }
